@@ -107,7 +107,8 @@ while True:
                 winsound.Beep(frequency, duration)
             stock = []
             timer = time.clock()
-            if(time.clock()-time_start>tot*60) break;
+            if(time.clock()-time_start>tot*60):
+                break
 
 winsound.Beep(frequency, duration*3)
 print("Great work session! Time to take a break!")
