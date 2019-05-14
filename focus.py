@@ -78,6 +78,7 @@ time_start = time.clock()
 
 for q in range(1,cycles+1):
     print("Focus Cycle", q)
+    time_start = time.clock()
     
     while True:
         data, addr = sock.recvfrom(1024)
