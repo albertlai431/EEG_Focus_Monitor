@@ -70,45 +70,59 @@ print("Calibration complete")
 
 #phase 2
 print("Initializing...")
-tot = input("How many minutes do you want to focus for?")
+foc = int(input("How long are your focus periods (minutes)?"))
+bre = int(input("How long are your breaks (minutes)?"))
+cycles = int(input("How many Pomodoro sessions?"))
+print("Ready to go! When you hear a beep, get back to focusing! If you hear a long beep, take a break!")
 time_start = time.clock()
 
-while True:
-    data, addr = sock.recvfrom(1024)
-    if 'alpha_absolute' in str(data):
-        newData = str(data).split(",")
-        newData = newData[1].split("x")
+for q in range(1,cycles+1):
+    print("Focus Cycle", q)
+    
+    while True:
+        data, addr = sock.recvfrom(1024)
+        if 'alpha_absolute' in str(data):
+            newData = str(data).split(",")
+            newData = newData[1].split("x")
         
-        newData = newData[1:]
-        outData = []
-        for i in newData:
-            outData += [hexToDec(i[:-1])]
+            newData = newData[1:]
+            outData = []
+            for i in newData:
+                outData += [hexToDec(i[:-1])]
         
-        newerOut = []
-        for i in outData:
-            if type(i) == int and i>0:
-                newerOut += [i]
+            newerOut = []
+            for i in outData:
+                if type(i) == int and i>0:
+                    newerOut += [i]
                 
-        if len(newerOut) == 0:
-            continue
+            if len(newerOut) == 0:
+                continue
         
-        stock += [sum(newerOut)/len(newerOut)]
+            stock += [sum(newerOut)/len(newerOut)]
         
-        if time.clock() - timer > 10:
-            measure = (sum(stock)/len(stock))/benchmark*100
-            if measure>100:
-                print("Focused : 100%")
-            elif measure>80:
-                print("Focused : ",measure,"%")
-            elif measure>50:
-                print("Semifocused: ",measure,"%")
-            else:
-                print("Distracted: ",measure,"%")
-                winsound.Beep(frequency, duration)
-            stock = []
-            timer = time.clock()
-            if(time.clock()-time_start>tot*60):
-                break
+            if time.clock() - timer > 10:
+                measure = (sum(stock)/len(stock))/benchmark*100
+                if measure>100:
+                    print("Focused : 100%")
+                elif measure>80:
+                    print("Focused : ",measure,"%")
+                elif measure>50:
+                    print("Semifocused: ",measure,"%")
+                else:
+                    print("Distracted: ",measure,"%")
+                    winsound.Beep(frequency, duration)
+                stock = []
+                timer = time.clock()
+                if(time.clock()-time_start>foc*60):
+                    break
 
-winsound.Beep(frequency, duration*3)
-print("Great work session! Time to take a break!")
+    winsound.Beep(frequency, duration*3)
+    if q==cycles:
+        continue
+    
+    print("Great work session! Time to take a break!")
+    time.sleep(bre*60)
+    winsound.Beep(frequency, duration*2)
+    timer = time.clock()
+    
+print("Awesome Pomodoro cycle! Take a long break and come back later!")
